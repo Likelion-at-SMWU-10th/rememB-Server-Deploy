@@ -1,7 +1,7 @@
 ---
-name: Feature request
+name: 'Issue: rememB 백엔드'
 about: Suggest an idea for this project
-title: 'Issue: rememB 백엔드'
+title: "[이슈 분류] 작업내용"
 labels: ''
 assignees: summit45, happine2s
 
@@ -17,7 +17,7 @@ assignees: summit45, happine2s
 
 
 ## 📌  Feature Issue
-<!-- 이슈에 대해 설명해주세요. -->
+<!-- 과제에 대해 설명해주세요. -->
 - <!-- 여기다가 내용 작성 -->
 
 ## 📝  To-do

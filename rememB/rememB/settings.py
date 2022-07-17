@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
     #provider
     'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.naver',
 ]
 
 MIDDLEWARE = [

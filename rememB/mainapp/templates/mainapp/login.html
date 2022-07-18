@@ -10,6 +10,7 @@
     {{ user.username }}님이 환영합니다!
 {% else %}
     <!-- {% csrf_token %} -->
-    <a href="{% provider_login_url 'google' %}">구글 로그인</a>
+    <a href="{% provider_login_url 'google' %}">구글 로그인</a><br>
+    <a href="{% provider_login_url 'naver'  %}">네이버 로그인</a>
 
 {% endif %}

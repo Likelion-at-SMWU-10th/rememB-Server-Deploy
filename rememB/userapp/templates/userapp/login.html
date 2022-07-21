@@ -1,7 +1,7 @@
 {% load socialaccount %}
 {% providers_media_js %}
 
-<a href="/accounts/signup">회원가입</a>
+<!-- <a href="/accounts/signup">회원가입</a> -->
 <br>
 
 {% if user.is_authenticated %}
@@ -11,5 +11,7 @@
 {% else %}
     <!-- {% csrf_token %} -->
     <a href="{% provider_login_url 'google' %}">구글 로그인</a>
+    <br>
+    <a href="{% provider_login_url 'naver' %}">네이버 로그인</a>
 
 {% endif %}

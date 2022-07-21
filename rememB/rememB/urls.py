@@ -7,4 +7,5 @@ urlpatterns = [
     path('letterapp/',include('letterapp.urls')),
     path('mainapp/',include('mainapp.urls')),
     path('accounts/',include('allauth.urls')),
+    path('user/',include('userapp.urls')),
 ]

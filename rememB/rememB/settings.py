@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'mainapp',
     'letterapp',
     'balanceapp',
+    'userapp',
     
     #allauth
     'allauth',

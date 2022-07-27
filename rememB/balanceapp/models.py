@@ -1,5 +1,5 @@
 from django.db import models
-from mainapp.models import User
+from userapp.models import User
 
 # Create your models here.
 class Question(models.Model):

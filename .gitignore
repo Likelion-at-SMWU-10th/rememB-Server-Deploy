@@ -306,3 +306,4 @@ Myvenv/
 .DS_Store
 
 myvenv/
+.env

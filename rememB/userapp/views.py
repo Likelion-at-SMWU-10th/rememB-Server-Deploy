@@ -1,124 +1,61 @@
-from django.shortcuts import render
-
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.decorators import action
-from rest_framework import viewsets
-
-from .serializers import UserFindSerializer, UserSerializer
+from telnetlib import STATUS
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from urllib3 import HTTPResponse
 from .models import User
-from .tokens import *
+from .serializers import UserSerializer
+from rest_framework.parsers import JSONParser
 
-# Create your views here.
-class UserList(APIView):
-    def post(self, request): # 회원 등록하는 경우
-        serializer = UserSerializer(data = request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+@csrf_exempt
+def user_list(request):
+    #get: 계정 전체 조회
+    if request.method=='GET':
+        query_set=User.objects.all()
+        serializers=UserSerializer(query_set,many=True)
+        return JsonResponse(serializers.data, safe=False)
     
-    def get(self, request): # 회원 조회하는 경우
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True) # 다수의 쿼리셋 전달 위해서 many = True
-        return Response(serializer.data)
+    #post: 회원가입
+    elif request.method=='POST':
+        data=JSONParser().parse(request)
+        serializers=UserSerializer(data=data)
+        if serializers.is_valid():
+            serializers.save()
+            return JsonResponse(serializers.data, status=201)
+        return JsonResponse(serializers.error, status=400)
 
-class UserFind(APIView):
-    def post(self, request):
-        serializer = UserFindSerializer(data = request.data)
-        if serializer.is_valid():
-            email = request.data['email']
-            provider = request.data['provider']
-            try:
-                user = User.objects.get( 
-                    email=email,
-                    provider=provider
-                )
-                print(user.id)
-                # payload에 넣을 값 커스텀 가능
-                payload_value = user.id
-                payload = {
-                    "subject": payload_value,
-                }
+@csrf_exempt
+def user_detail(request,pk):
+    obj=User.objects.get(uuid=pk)
 
-                access_token = generate_token(payload, "access")
+    #get: uuid로 계정 조회
+    if request.method=='GET':
+        serializers=UserSerializer(obj)
+        return JsonResponse(serializers.data, safe=False)
+    
+    #put: pk의 계정 정보 수정
+    elif request.method=='PUT':
+        data=JSONParser().parse(request)
+        serializers=UserSerializer(obj, data=data)
+        if serializers.is_valid():
+            serializers.save()
+            return JsonResponse(serializers.data, status=201)
+        return JsonResponse(serializers.errors, status=400)
 
-                data = {
-                    "results": {
-                        "access_token": access_token
-                    }
-                }
+    #delete: pk의 계정 정보 삭제
+    elif request.method=='DELETE':
+        obj.delete()
+        return HTTPResponse(status=204)
 
-                return Response(data=data, status=status.HTTP_200_OK)
-
-            except User.DoesNotExist:
-                data = {
-                    "results": {
-                        "msg": "유저 정보가 올바르지 않습니다.",
-                        "code": "E4010"
-                    }
-                }
-                return Response(data=data, status=status.HTTP_401_UNAUTHORIZED)
-
-            except Exception as e:
-                print(e)
-                data = {
-                    "results": {
-                        "msg": "정상적인 접근이 아닙니다.",
-                        "code": "E5000"
-                    }
-                }
-                return Response(data=data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        
-
-class AuthViewSet(viewsets.GenericViewSet):
-    @action(methods=['POST'], detail=False)
-    def signin(self, request):
-        email = request.data['email']
-        provider = request.data['provider']
-        print(email, provider)
-        try:
-            user = User.objects.get( 
-                email=email,
-                provider=provider
-            )
-			
-            # payload에 넣을 값 커스텀 가능
-            payload_value = user.id
-            payload = {
-                "subject": payload_value,
-            }
-
-            access_token = generate_token(payload, "access")
-
-            data = {
-                "results": {
-                    "access_token": access_token
-                }
-            }
-
-            return Response(data=data, status=status.HTTP_200_OK)
-
-        except User.DoesNotExist:
-            data = {
-                "results": {
-                    "msg": "유저 정보가 올바르지 않습니다.",
-                    "code": "E4010"
-                }
-            }
-            return Response(data=data, status=status.HTTP_401_UNAUTHORIZED)
-
-        except Exception as e:
-            print(e)
-            data = {
-                "results": {
-                    "msg": "정상적인 접근이 아닙니다.",
-                    "code": "E5000"
-                }
-            }
-            return Response(data=data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+@csrf_exempt
 def login(request):
-    return render(request,'userapp/login.html')
+    #post: 로그인
+    if request.method=='POST':
+        data=JSONParser().parse(request)
+        search_email=data['email']
+        obj=User.objects.get(email=search_email)
+
+        #if data['uuid']==str(obj.uuid):
+        if data['provider']==obj.provider:
+            return HttpResponse(status=200)
+        else:
+            return HttpResponse(status=400)

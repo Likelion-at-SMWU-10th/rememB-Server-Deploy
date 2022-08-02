@@ -1,12 +1,8 @@
+from asyncore import file_dispatcher
 from rest_framework import serializers
 from .models import User
 
-class UserSerializer(serializers.ModelSerializer): # 유저 추가
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ('id', 'email', 'provider', 'user_name', 'birthday')
-
-class UserFindSerializer(serializers.ModelSerializer): # 유저 추가
-    class Meta:
-        model = User
-        fields = ('email', 'provider')
+        model=User
+        fields='__all__'

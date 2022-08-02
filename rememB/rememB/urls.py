@@ -6,6 +6,6 @@ urlpatterns = [
     path('balanceapp/',include('balanceapp.urls')),
     path('letterapp/',include('letterapp.urls')),
     path('mainapp/',include('mainapp.urls')),
-    path('accounts/',include('allauth.urls')),
     path('user/',include('userapp.urls')),
+    path('auth', include('rest_framework.urls', namespace='rest_framework'))
 ]

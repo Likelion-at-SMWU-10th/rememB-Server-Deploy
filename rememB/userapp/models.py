@@ -1,11 +1,40 @@
 from django.db import models
+import uuid
 
-# Create your models here.
+#uuid, email, provider, username, birth
 class User(models.Model):
-    email = models.CharField(max_length=100)
-    provider = models.CharField(max_length=100)
-    user_name = models.CharField(max_length=100)
-    birthday = models.DateField()
-    access_token = models.CharField(max_length=200)
-    refresh_token = models.CharField(max_length=200)
-    expire = models.CharField(max_length=100)
+    uuid=models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        unique=True,
+        db_index=True,
+        editable=False,
+    )
+    email=models.EmailField(
+        verbose_name=('email'),
+        max_length=64,
+        unique=True,
+        null=False,
+        blank=False,
+        editable=False,
+    )
+    username=models.CharField(
+        max_length=30,
+        null=False,
+        blank=False,
+    )
+    provider=models.CharField(
+        max_length=20,
+        null=False,
+        blank=False,
+        editable=False,
+    )
+    birth=models.DateField(
+        blank=True,
+    )
+
+    def __str__(self):
+        return str(self.uuid)
+    
+    def get_email(self):
+        return str(self.email)

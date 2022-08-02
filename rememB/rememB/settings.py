@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 from decouple import config
+import datetime
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,7 +28,6 @@ SECRET_KEY = config("SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -56,6 +56,13 @@ INSTALLED_APPS = [
     #restframework
     'rest_framework',
 ]
+
+REST_FRAMEWORK = { 
+    # 권한 설정
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -137,15 +144,3 @@ STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-AUTHENTICATION_BACKENDS=(
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend'
-)
-
-SITE_ID = 1
-LOGIN_REDIRECT_URL = '/' #로그인 후 리디렉션할 페이지
-ACCOUNT_LOGOUT_REDIRECT_URL ='/' #로그아웃 후 리디렉션 할 페이지
-ACCOUNT_LOGOUT_ON_GET = True #로그아웃 버튼 클릭 시 자동 로그아웃

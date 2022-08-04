@@ -32,12 +32,21 @@ class JWTSignupSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         user=User.objects.create(
-            email=self.validated_data['email'],
-            username=self.validated_data['username'],
-            provider=self.validated_data['provider'],
-            birth=self.validated_data['birth']
+            email=validated_data['email'],
+            username=validated_data['username'],
+            provider=validated_data['provider'],
+            birth=validated_data['birth']
         )
+        token = RefreshToken.for_user(user)
+        user.refreshtoken = token
         user.save()
+
+        # data = {
+        #     'uuid' : user.uuid,
+        #     'refresh_token' : str(token),
+        #     'access_token' : str(token.access_token)
+        # }
+
         return user
 
 class JWTSigninSerializer(serializers.ModelSerializer):
@@ -65,12 +74,11 @@ class JWTSigninSerializer(serializers.ModelSerializer):
         
         token = TokenObtainPairSerializer.get_token(user)
         data = {
-            'user' : user.uuid,
-            'refresh_token' : str(token),
-            'access_token' : str(token.access_token)
+            'uuid' : user.uuid,
+            'refresh' : str(token),
+            'access' : str(token.access_token)
         }
         if api_settings.UPDATE_LAST_LOGIN:
             update_last_login(None, self.user)
 
         return data
-

@@ -10,7 +10,7 @@ from rest_framework import generics, status
 import json
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import viewsets
 
 
 @csrf_exempt
@@ -59,9 +59,9 @@ class JWTSigninView(generics.CreateAPIView):
         token=serializer.validated_data
         return Response({"token":token}, status=status.HTTP_200_OK)
 
-class HelloView(APIView):
-    permission_classes=(IsAuthenticated,)
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
-    def get(self, request):
-        content={'msg':'hello,world'}
-        return Response(content)
+
+

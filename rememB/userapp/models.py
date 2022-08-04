@@ -4,7 +4,7 @@ import uuid
 #uuid, email, provider, username, birth
 class User(models.Model):
     uuid=models.UUIDField(
-        primary_key=True,
+        #primary_key=True,
         default=uuid.uuid4,
         unique=True,
         db_index=True,

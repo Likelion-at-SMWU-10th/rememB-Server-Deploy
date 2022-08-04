@@ -74,7 +74,7 @@ SIMPLE_JWT={
     'REFRESH_TOKEN_LIFETIME':datetime.timedelta(days=2),
     'ROTATE_REFRESH_TOKENS':False,
     'TOKEN_USER_CLASS':'userapp.USer',
-    'USER_ID_FIELD':'uuid'
+    #'USER_ID_FIELD':'email',
 }
 
 MIDDLEWARE = [

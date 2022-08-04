@@ -1,10 +1,17 @@
-from telnetlib import STATUS
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
-from urllib3 import HTTPResponse
 from .models import User
-from .serializers import UserSerializer
+from .serializers import JWTSigninSerializer, UserSerializer
 from rest_framework.parsers import JSONParser
+from rest_framework.views import APIView
+from .serializers import *
+from rest_framework.response import Response
+from rest_framework import generics, status
+import json
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+
 
 @csrf_exempt
 def user_list(request):
@@ -13,21 +20,12 @@ def user_list(request):
         query_set=User.objects.all()
         serializers=UserSerializer(query_set,many=True)
         return JsonResponse(serializers.data, safe=False)
-    
-    #post: 회원가입
-    elif request.method=='POST':
-        data=JSONParser().parse(request)
-        serializers=UserSerializer(data=data)
-        if serializers.is_valid():
-            serializers.save()
-            return JsonResponse(serializers.data, status=201)
-        return JsonResponse(serializers.error, status=400)
 
 @csrf_exempt
 def user_detail(request,pk):
     obj=User.objects.get(uuid=pk)
 
-    #get: uuid로 계정 조회
+    #get: pk의 계정 조회
     if request.method=='GET':
         serializers=UserSerializer(obj)
         return JsonResponse(serializers.data, safe=False)
@@ -44,18 +42,26 @@ def user_detail(request,pk):
     #delete: pk의 계정 정보 삭제
     elif request.method=='DELETE':
         obj.delete()
-        return HTTPResponse(status=204)
+        return HttpResponse(status=204)
 
-@csrf_exempt
-def login(request):
-    #post: 로그인
-    if request.method=='POST':
-        data=JSONParser().parse(request)
-        search_email=data['email']
-        obj=User.objects.get(email=search_email)
+class JWTSignupView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = JWTSignupSerializer
 
-        #if data['uuid']==str(obj.uuid):
-        if data['provider']==obj.provider:
-            return HttpResponse(status=200)
-        else:
-            return HttpResponse(status=400)
+
+class JWTSigninView(generics.CreateAPIView):
+    serializer_class=JWTSigninSerializer
+
+    def post(self,request):
+        serializer=self.get_serializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+        token=serializer.validated_data
+        return Response({"token":token}, status=status.HTTP_200_OK)
+
+class HelloView(APIView):
+    permission_classes=(IsAuthenticated,)
+
+    def get(self, request):
+        content={'msg':'hello,world'}
+        return Response(content)

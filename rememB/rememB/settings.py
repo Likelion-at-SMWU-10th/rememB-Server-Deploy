@@ -10,7 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+from operator import truediv
 from pathlib import Path
+from pickle import TRUE
 from decouple import config
 import datetime
 
@@ -55,13 +57,24 @@ INSTALLED_APPS = [
 
     #restframework
     'rest_framework',
+    'rest_framework_simplejwt',
 ]
 
 REST_FRAMEWORK = { 
     # 권한 설정
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ]
+}
+
+REST_USE_JWT=TRUE
+
+SIMPLE_JWT={
+    'ACCESS_TOKEN_LIFETIME':datetime.timedelta(hours=2),
+    'REFRESH_TOKEN_LIFETIME':datetime.timedelta(days=2),
+    'ROTATE_REFRESH_TOKENS':False,
+    'TOKEN_USER_CLASS':'userapp.USer',
+    'USER_ID_FIELD':'uuid'
 }
 
 MIDDLEWARE = [

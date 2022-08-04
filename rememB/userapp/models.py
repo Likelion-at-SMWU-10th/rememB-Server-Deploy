@@ -8,7 +8,6 @@ class User(models.Model):
         default=uuid.uuid4,
         unique=True,
         db_index=True,
-        editable=False,
     )
     email=models.EmailField(
         verbose_name=('email'),
@@ -16,7 +15,6 @@ class User(models.Model):
         unique=True,
         null=False,
         blank=False,
-        editable=False,
     )
     username=models.CharField(
         max_length=30,
@@ -27,7 +25,6 @@ class User(models.Model):
         max_length=20,
         null=False,
         blank=False,
-        editable=False,
     )
     birth=models.DateField(
         blank=True,

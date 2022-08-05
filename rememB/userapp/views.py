@@ -44,23 +44,26 @@ def user_detail(request,pk):
         obj.delete()
         return HttpResponse(status=204)
 
-class JWTSignupView(generics.CreateAPIView):
+
+class JWTSigninView(generics.CreateAPIView):
+    serializer_class=JWTSigninSerializer
 
     def post(self,request):
+        user = User.objects.get_or_create( 
+            email=request.data['email'],
+            provider=request.data['provider'],
+            birth=request.data['birth'],
+            username=request.data['username']
+        )
+
         serializer=self.get_serializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-
-            email = request.data['email']
-            provider = request.data['provider']
             try:
                 user = User.objects.get( 
-                    email=email,
-                    provider=provider
+                    email=request.data['email'],
+                    provider=request.data['provider'],
                 )
-
                 token = RefreshToken.for_user(user)
-
                 user.refreshToken = str(token)
                 user.save()
 
@@ -68,7 +71,6 @@ class JWTSignupView(generics.CreateAPIView):
                     "results": {
                         "id" : user.id,
                         "uuid" : user.uuid,
-                        "username" : user.username,
                         "refreshToken" : user.refreshToken,
                         "accessToken" : str(token.access_token),
                     }
@@ -93,55 +95,16 @@ class JWTSignupView(generics.CreateAPIView):
                     }
                 }
                 return Response(data=data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+        else:
+            print("예외")
+            data={
+                "results":{
+                    "error" : "에러",
+                }
+            }
+            return Response(data=data, status=status.HTTP_200_OK)
     queryset = User.objects.all()
-    serializer_class = JWTSignupSerializer
-
-
-class JWTSigninView(generics.CreateAPIView):
-    serializer_class=JWTSigninSerializer
-
-    def post(self,request):
-        serializer=self.get_serializer(data=request.data)
-
-        if serializer.is_valid():
-
-            email = request.data['email']
-            provider = request.data['provider']
-            try:
-                user = User.objects.get( 
-                    email=email,
-                    provider=provider
-                )
-
-                data =  {
-                    "results": {
-                        "id" : user.id,
-                        "uuid" : user.uuid,
-                        "username" : user.username,
-                        "refreshToken" : user.refreshToken,
-                        "accessToken" : user.refreshToken.access_token,
-                    }
-                }
-                return Response(data=data, status=status.HTTP_200_OK)
-            except User.DoesNotExist:
-                data = {
-                    "results": {
-                        "msg": "유저 정보가 올바르지 않습니다.",
-                        "code": "E4010"
-                    }
-                }
-                return Response(data=data, status=status.HTTP_401_UNAUTHORIZED)
-
-            except Exception as e:
-                print(e)
-                data = {
-                    "results": {
-                        "msg": "정상적인 접근이 아닙니다.",
-                        "code": "E5000"
-                    }
-                }
-                return Response(data=data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    serializer_class = JWTSigninSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):

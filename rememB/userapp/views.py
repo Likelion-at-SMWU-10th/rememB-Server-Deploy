@@ -45,6 +45,55 @@ def user_detail(request,pk):
         return HttpResponse(status=204)
 
 class JWTSignupView(generics.CreateAPIView):
+
+    def post(self,request):
+        serializer=self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+
+            email = request.data['email']
+            provider = request.data['provider']
+            try:
+                user = User.objects.get( 
+                    email=email,
+                    provider=provider
+                )
+
+                token = RefreshToken.for_user(user)
+
+                user.refreshToken = str(token)
+                user.save()
+
+                data =  {
+                    "results": {
+                        "id" : user.id,
+                        "uuid" : user.uuid,
+                        "username" : user.username,
+                        "refreshToken" : user.refreshToken,
+                        "accessToken" : str(token.access_token),
+                    }
+                }
+                return Response(data=data, status=status.HTTP_200_OK)
+
+            except User.DoesNotExist:
+                data = {
+                    "results": {
+                        "msg": "유저 정보가 올바르지 않습니다.",
+                        "code": "E4010"
+                    }
+                }
+                return Response(data=data, status=status.HTTP_401_UNAUTHORIZED)
+
+            except Exception as e:
+                print(e)
+                data = {
+                    "results": {
+                        "msg": "정상적인 접근이 아닙니다.",
+                        "code": "E5000"
+                    }
+                }
+                return Response(data=data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     queryset = User.objects.all()
     serializer_class = JWTSignupSerializer
 
@@ -55,9 +104,45 @@ class JWTSigninView(generics.CreateAPIView):
     def post(self,request):
         serializer=self.get_serializer(data=request.data)
 
-        serializer.is_valid(raise_exception=True)
-        token=serializer.validated_data
-        return Response({"token":token}, status=status.HTTP_200_OK)
+        if serializer.is_valid():
+
+            email = request.data['email']
+            provider = request.data['provider']
+            try:
+                user = User.objects.get( 
+                    email=email,
+                    provider=provider
+                )
+
+                data =  {
+                    "results": {
+                        "id" : user.id,
+                        "uuid" : user.uuid,
+                        "username" : user.username,
+                        "refreshToken" : user.refreshToken,
+                        "accessToken" : user.refreshToken.access_token,
+                    }
+                }
+                return Response(data=data, status=status.HTTP_200_OK)
+            except User.DoesNotExist:
+                data = {
+                    "results": {
+                        "msg": "유저 정보가 올바르지 않습니다.",
+                        "code": "E4010"
+                    }
+                }
+                return Response(data=data, status=status.HTTP_401_UNAUTHORIZED)
+
+            except Exception as e:
+                print(e)
+                data = {
+                    "results": {
+                        "msg": "정상적인 접근이 아닙니다.",
+                        "code": "E5000"
+                    }
+                }
+                return Response(data=data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()

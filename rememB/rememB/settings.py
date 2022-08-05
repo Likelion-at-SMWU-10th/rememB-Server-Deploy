@@ -29,7 +29,10 @@ SECRET_KEY = config("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+   '1.0.0.127.in-addr.arpa',
+   '127.0.0.1'
+]
 
 # Application definition
 
@@ -61,6 +64,10 @@ INSTALLED_APPS = [
 ]
 
 REST_FRAMEWORK = { 
+    # 헤더에 access token을 포함하여 유효한 유저만이 접근이 가능하는 것을 Default로 설정
+    # 'DEFAULT_PERMISSION_CLASSES': ( 
+    #    'rest_framework.permissions.IsAuthenticated',
+    # ),
     # 권한 설정
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',

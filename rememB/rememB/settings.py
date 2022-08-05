@@ -77,8 +77,8 @@ REST_FRAMEWORK = {
 REST_USE_JWT=TRUE
 
 SIMPLE_JWT={
-    'ACCESS_TOKEN_LIFETIME':datetime.timedelta(hours=2),
-    'REFRESH_TOKEN_LIFETIME':datetime.timedelta(days=2),
+    'ACCESS_TOKEN_LIFETIME':datetime.timedelta(minutes=20),
+    'REFRESH_TOKEN_LIFETIME':datetime.timedelta(days=1),
     'ROTATE_REFRESH_TOKENS':False,
     'TOKEN_USER_CLASS':'userapp.USer',
     #'USER_ID_FIELD':'email',

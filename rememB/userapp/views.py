@@ -93,18 +93,15 @@ class JWTSigninView(generics.CreateAPIView):
                         "msg": "정상적인 접근이 아닙니다.",
                         "code": "E5000"
                     }
-                }
+                } 
                 return Response(data=data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
-            print("예외")
             data={
                 "results":{
-                    "error" : "에러",
+                    "error" : "serializer.is_valid() 에러",
                 }
             }
-            return Response(data=data, status=status.HTTP_200_OK)
-    queryset = User.objects.all()
-    serializer_class = JWTSigninSerializer
+            return Response(data=data, sstatus=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class UserViewSet(viewsets.ModelViewSet):

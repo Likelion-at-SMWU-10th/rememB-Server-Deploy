@@ -10,8 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+from operator import truediv
 from pathlib import Path
+from pickle import TRUE
 from decouple import config
+import datetime
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,8 +29,10 @@ SECRET_KEY = config("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    '1.0.0.127.in-addr.arpa',
+    '127.0.0.1'
+]
 
 # Application definition
 
@@ -38,24 +43,36 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'mainapp',
+    #'mainapp',
     'letterapp',
-    'balanceapp',
+    #'balanceapp',
     'userapp',
-    
-    #allauth
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-
-    #provider
-    'allauth.socialaccount.providers.google',
-    'allauth.socialaccount.providers.naver',
-    'allauth.socialaccount.providers.kakao',
 
     #restframework
     'rest_framework',
+    'rest_framework_simplejwt',
 ]
+
+REST_FRAMEWORK = { 
+    # 헤더에 access token을 포함하여 유효한 유저만이 접근이 가능하는 것을 Default로 설정
+    # 'DEFAULT_PERMISSION_CLASSES': ( 
+    #    'rest_framework.permissions.IsAuthenticated',
+    # ),
+    # 권한 설정
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ]
+}
+
+REST_USE_JWT=TRUE
+
+SIMPLE_JWT={
+    'ACCESS_TOKEN_LIFETIME':datetime.timedelta(minutes=2),
+    'REFRESH_TOKEN_LIFETIME':datetime.timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS':False,
+    'TOKEN_USER_CLASS':'userapp.User',
+    #'USER_ID_FIELD':'email',
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -137,15 +154,3 @@ STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-AUTHENTICATION_BACKENDS=(
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend'
-)
-
-SITE_ID = 1
-LOGIN_REDIRECT_URL = '/' #로그인 후 리디렉션할 페이지
-ACCOUNT_LOGOUT_REDIRECT_URL ='/' #로그아웃 후 리디렉션 할 페이지
-ACCOUNT_LOGOUT_ON_GET = True #로그아웃 버튼 클릭 시 자동 로그아웃

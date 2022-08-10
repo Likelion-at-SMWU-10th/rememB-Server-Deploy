@@ -1,12 +1,18 @@
 from rest_framework import serializers
 from .models import User
 
-class UserSerializer(serializers.ModelSerializer): # 유저 추가
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ('id', 'email', 'provider', 'user_name', 'birthday')
+        model=User
+        fields='__all__'
 
-class UserFindSerializer(serializers.ModelSerializer): # 유저 추가
+
+class JWTSigninSerializer(serializers.ModelSerializer):
+    email=serializers.EmailField()
+    username=serializers.CharField()
+    provider=serializers.CharField(max_length=20)
+    birth=serializers.DateField()
+
     class Meta:
-        model = User
-        fields = ('email', 'provider')
+        model=User
+        fields='__all__'

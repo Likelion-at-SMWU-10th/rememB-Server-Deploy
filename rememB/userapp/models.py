@@ -2,48 +2,24 @@ from os import access
 from django.db import models
 import uuid
 
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-#uuid, email, provider, username, birth
 class User(models.Model):
-    uuid=models.UUIDField(
-        #primary_key=True,
-        default=uuid.uuid4,
-        unique=True,
-        db_index=True,
-    )
-    email=models.EmailField(
-        verbose_name=('email'),
-        max_length=64,
-        unique=True,
-        null=False,
-        blank=False,
-    )
-    username=models.CharField(
-        max_length=30,
-        null=False,
-        blank=False,
-    )
-    provider=models.CharField(
-        max_length=20,
-        null=False,
-        blank=False,
-    )
-    birth=models.DateField(
-        blank=True,
-    )
-    refreshToken=models.CharField(
-        max_length=200,
-        null=True,
-        default='',
-    )
+    id = models.AutoField(primary_key=True,)
+    email=models.EmailField(verbose_name=('email'), max_length=64, unique=True, null=False, blank=False,)
+    username=models.CharField(max_length=30, null=False, blank=False,)
+    provider=models.CharField(max_length=20, null=False, blank=False,)
+    birth=models.DateField(blank=True,)
+    refreshToken=models.CharField(max_length=2000, null=True, default='',)
 
-    def __str__(self):
-        return str(self.uuid)
+    # User 모델의 필수 field
+    is_active = models.BooleanField(default=True)    
+    is_admin = models.BooleanField(default=False)
     
-    def get_email(self):
+    def __str__(self):
         return str(self.email)
+    
+    def get_id(self):
+        return str(self.id)
     
     def validate(self,data):
         search_email=data.get('email',None)

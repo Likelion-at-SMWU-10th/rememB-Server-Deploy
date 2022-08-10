@@ -30,8 +30,8 @@ SECRET_KEY = config("SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = [
-   '1.0.0.127.in-addr.arpa',
-   '127.0.0.1'
+    '1.0.0.127.in-addr.arpa',
+    '127.0.0.1'
 ]
 
 # Application definition
@@ -43,20 +43,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'mainapp',
+    #'mainapp',
     'letterapp',
-    'balanceapp',
+    #'balanceapp',
     'userapp',
-    
-    #allauth
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-
-    #provider
-    'allauth.socialaccount.providers.google',
-    'allauth.socialaccount.providers.naver',
-    'allauth.socialaccount.providers.kakao',
 
     #restframework
     'rest_framework',
@@ -77,10 +67,10 @@ REST_FRAMEWORK = {
 REST_USE_JWT=TRUE
 
 SIMPLE_JWT={
-    'ACCESS_TOKEN_LIFETIME':datetime.timedelta(minutes=20),
+    'ACCESS_TOKEN_LIFETIME':datetime.timedelta(minutes=2),
     'REFRESH_TOKEN_LIFETIME':datetime.timedelta(days=1),
     'ROTATE_REFRESH_TOKENS':False,
-    'TOKEN_USER_CLASS':'userapp.USer',
+    'TOKEN_USER_CLASS':'userapp.User',
     #'USER_ID_FIELD':'email',
 }
 

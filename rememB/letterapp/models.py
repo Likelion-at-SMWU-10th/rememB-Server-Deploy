@@ -1,13 +1,16 @@
 from django.db import models
-
 from userapp.models import User
 
 class Letter(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE) # 유저와 연동
-    letter_content = models.CharField(max_length=300)
-    img_no = models.IntegerField()
+    id = models.AutoField(primary_key=True, null=False, blank=False) 
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    content = models.TextField()
+    imgfolder_no=models.IntegerField(null=True)
+    img_no = models.IntegerField(null=True)
     created_at = models.DateTimeField(auto_now=True)
-    position_x = models.IntegerField()
-    position_y = models.IntegerField()
+    position_x = models.IntegerField(null=True)
+    position_y = models.IntegerField(null=True)
 
-
+    def __str__(self):
+        return self.content[:7]
+    

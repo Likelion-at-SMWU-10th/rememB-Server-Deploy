@@ -82,7 +82,7 @@ class BalanceList(APIView): #user(pk)의 질문&대답 목록
 class myBalanceList(APIView): #user(pk)의 질문&대답 목록 
     def get(self, request, pk): 
         user=User.objects.get(id=pk)
-        balances=Balance.objects.filter(id=pk) 
+        balances=Balance.objects.filter(user=user) 
         serializers=BalanceSerializer(balances,many=True)
         return Response(serializers.data, status=status.HTTP_200_OK)
 

@@ -92,8 +92,15 @@ class myBalanceGame(APIView):
         
         #해당 유저 찾아서
         user=User.objects.get(id=pk)
-
+        request.data['user'] = user.id
+        print(request.data)
         #Balance모델에 userid, questionid, answerid저장
+        serializer = BalanceSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         
     def get(self, request, pk): #밸런스게임 질문-답 조회
@@ -107,9 +114,9 @@ class myBalanceGame(APIView):
                 q_id = q.id
                 answer1_id=Answer.objects.get(id=(q_id*2-1)).id
                 answer2_id=Answer.objects.get(id=(q_id*2)).id
-                content = {'q_id': q_id, 'answer1_id' : answer1_id, 'answer2_id': answer2_id}
+                content = {'q_id': q_id, 'answer1_id' : answer1_id, 'answer2_id': answer2_id} #여러 개일 때 여러개가 보내지는지 확인해야함
 
-            return Response(content, status=status.HTTP_200_OK) #질문이랑 데이터가 전달됨
+            return Response(content, status=status.HTTP_200_OK) #질문이랑 데이터가 전달됨 
         
         else: #7일 이내가 아니라면 아직 답을 확인할 수 없음
             print("not yet")

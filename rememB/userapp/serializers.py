@@ -12,7 +12,10 @@ class JWTSigninSerializer(serializers.ModelSerializer):
     username=serializers.CharField()
     provider=serializers.CharField(max_length=20)
     birth=serializers.DateField()
-
+    
     class Meta:
         model=User
         fields='__all__'
+
+
+

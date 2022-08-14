@@ -3,10 +3,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 
-from userapp import serializers
 from .models import Answer, Balance, Question
-from .serializers import AnswerSerializer, QuestionSerializer, BalanceSerializer
+from .serializers import AnswerSerializer, BAQSerializer, QuestionSerializer, BalanceSerializer
 from userapp.models import User
+
+from balanceapp import serializers
 
 def getDayBefore(mybirthday):
         mybirthdayList = mybirthday.split("-")
@@ -74,10 +75,6 @@ class BalanceList(APIView): #user(pk)의 질문&대답 목록
 # 2. 7일 이내라면 해당 질문과 답을 보여준다. / 밀린 게 있을 수도 있으니 다수 가능
 # 3. 해당 답을 받아온다.
 
-# balance/<int:pk>/
-# 1. balance 모델에서 해당 유저 아이디로 검색하고, 답이 null값이 아니라면
-# 2. 질문과 답을 api로 보여준다.
-
 #실제 프론트와 전달할 api
 class myBalanceList(APIView): #user(pk)의 질문&대답 목록 
     def get(self, request, pk): 
@@ -88,37 +85,39 @@ class myBalanceList(APIView): #user(pk)의 질문&대답 목록
 
 class myBalanceGame(APIView):
     def post(self, request, pk): #밸런스게임 질문-답 선택(질문 형식으로)
-        print(request.data)
-        
-        #해당 유저 찾아서
-        user=User.objects.get(id=pk)
-        request.data['user'] = user.id
-        print(request.data)
-        #Balance모델에 userid, questionid, answerid저장
-        serializer = BalanceSerializer(data=request.data)
-        
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        
-    def get(self, request, pk): #밸런스게임 질문-답 조회
         user=User.objects.get(id=pk)
         leftDay=getDayBefore(str(user.birth))
-        print("DDAY", leftDay)
+        print(request.data)
+        if(leftDay <=7):
+            request.data['user'] = user.id
+            serializer = BalanceSerializer(data=request.data)
+            
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response("아직 응답 못함", status=status.HTTP_200_OK)
+
+        
+    def get(self, request, pk): #밸런스게임 질문-답 선택할수있도록 
+        user=User.objects.get(id=pk)
+        leftDay=getDayBefore(str(user.birth))
+
         if(leftDay <= 7): #생일 비교해보고 7일 이내라면
             questions=Question.objects.filter(id__gt=(leftDay-1)) #쿼리셋
+            print(questions)
+            serializer = BAQSerializer(questions, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+            # if serializer.is_valid():
+            #     return Response(serializer.data, status=status.HTTP_200_OK) #질문이랑 데이터가 전달됨 
+            # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
-            for q in questions:
-                q_id = q.id
-                answer1_id=Answer.objects.get(id=(q_id*2-1)).id
-                answer2_id=Answer.objects.get(id=(q_id*2)).id
-                content = {'q_id': q_id, 'answer1_id' : answer1_id, 'answer2_id': answer2_id} #여러 개일 때 여러개가 보내지는지 확인해야함
-
-            return Response(content, status=status.HTTP_200_OK) #질문이랑 데이터가 전달됨 
+       
+        
         
         else: #7일 이내가 아니라면 아직 답을 확인할 수 없음
             print("not yet")
             return Response("not yet", status=status.HTTP_200_OK)
+
 

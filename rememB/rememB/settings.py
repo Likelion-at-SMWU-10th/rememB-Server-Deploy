@@ -55,19 +55,19 @@ INSTALLED_APPS = [
 
 REST_FRAMEWORK = { 
     # 헤더에 access token을 포함하여 유효한 유저만이 접근이 가능하는 것을 Default로 설정
-    # 'DEFAULT_PERMISSION_CLASSES': ( 
-    #    'rest_framework.permissions.IsAuthenticated',
-    # ),
+    'DEFAULT_PERMISSION_CLASSES': ( 
+       'rest_framework.permissions.IsAuthenticated',
+    ),
     # 권한 설정
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'userapp.authenticate.SafeJWTAuthentication',
     ]
 }
 
 REST_USE_JWT=TRUE
 
 SIMPLE_JWT={
-    'ACCESS_TOKEN_LIFETIME':datetime.timedelta(minutes=2),
+    'ACCESS_TOKEN_LIFETIME':datetime.timedelta(minutes=10),
     'REFRESH_TOKEN_LIFETIME':datetime.timedelta(days=1),
     'ROTATE_REFRESH_TOKENS':False,
     'TOKEN_USER_CLASS':'userapp.User',

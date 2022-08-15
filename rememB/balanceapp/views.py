@@ -2,35 +2,36 @@ from datetime import datetime
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework import permissions
+
+from userapp.authenticate import SafeJWTAuthentication
 
 from .models import Answer, Balance, Question
 from .serializers import AnswerSerializer, BAQSerializer, QuestionSerializer, BalanceSerializer
 from userapp.models import User
 
-from balanceapp import serializers
-
 def getDayBefore(mybirthday):
-        mybirthdayList = mybirthday.split("-")
-        byear = int(mybirthdayList[0])
-        bmonth = int(mybirthdayList[1])
-        bday = int(mybirthdayList[2])
-        
-        nowList = str(datetime.now().date()).split("-")
-        nmonth = int(nowList[1])
-        nday= int(nowList[2])
+    mybirthdayList = mybirthday.split("-")
+    byear = int(mybirthdayList[0])
+    bmonth = int(mybirthdayList[1])
+    bday = int(mybirthdayList[2])
+    
+    nowList = str(datetime.now().date()).split("-")
+    nmonth = int(nowList[1])
+    nday= int(nowList[2])
 
-        if(bmonth<nmonth | ((bmonth==nmonth) & (bday<nday))): #이미 생일이 지난경우
-            dday = datetime(2023, bmonth, bday).date()
-            now = datetime.now().date()
-            print(str(dday-now).split(",")[0].split(" ")[0])
-            return int(str(dday-now).split(",")[0].split(" ")[0])
-        else:
-            dday = datetime(2022, bmonth, bday).date()
-            print(dday)
-            now = datetime.now().date()
-            diff = str(dday-now).split(",")[0].split(" ")[0]
-            print(diff)
-            return int(diff)
+    if(bmonth<nmonth | ((bmonth==nmonth) & (bday<nday))): #이미 생일이 지난경우
+        dday = datetime(2023, bmonth, bday).date()
+        now = datetime.now().date()
+        print(str(dday-now).split(",")[0].split(" ")[0])
+        return int(str(dday-now).split(",")[0].split(" ")[0])
+    else:
+        dday = datetime(2022, bmonth, bday).date()
+        print(dday)
+        now = datetime.now().date()
+        diff = str(dday-now).split(",")[0].split(" ")[0]
+        print(diff)
+        return int(diff)
 
 
 class QuestionList(APIView):
@@ -77,6 +78,9 @@ class BalanceList(APIView): #user(pk)의 질문&대답 목록
 
 #실제 프론트와 전달할 api
 class myBalanceList(APIView): #user(pk)의 질문&대답 목록 
+    authentication_classes=[SafeJWTAuthentication]
+    permission_classes=[permissions.AllowAny]
+
     def get(self, request, pk): 
         user=User.objects.get(id=pk)
         balances=Balance.objects.filter(user=user) 
@@ -84,6 +88,9 @@ class myBalanceList(APIView): #user(pk)의 질문&대답 목록
         return Response(serializers.data, status=status.HTTP_200_OK)
 
 class myBalanceGame(APIView):
+    authentication_classes=[SafeJWTAuthentication]
+    permission_classes=[permissions.AllowAny]
+    
     def post(self, request, pk): #밸런스게임 질문-답 선택(질문 형식으로)
         user=User.objects.get(id=pk)
         leftDay=getDayBefore(str(user.birth))
@@ -113,9 +120,6 @@ class myBalanceGame(APIView):
             #     return Response(serializer.data, status=status.HTTP_200_OK) #질문이랑 데이터가 전달됨 
             # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
-       
-        
-        
         else: #7일 이내가 아니라면 아직 답을 확인할 수 없음
             print("not yet")
             return Response("not yet", status=status.HTTP_200_OK)

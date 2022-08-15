@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     #restframework
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework.authtoken',
 ]
 
 REST_FRAMEWORK = { 

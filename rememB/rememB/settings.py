@@ -30,8 +30,9 @@ SECRET_KEY = config("SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    '*',
     '1.0.0.127.in-addr.arpa',
-    '127.0.0.1'
+    '127.0.0.1',
 ]
 
 # Application definition

@@ -53,6 +53,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework.authtoken',
+
+    'corsheaders',
 ]
 
 REST_FRAMEWORK = { 
@@ -77,6 +79,7 @@ SIMPLE_JWT={
 }
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware', #최상단에 추가해주기
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -156,3 +159,15 @@ STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
+
+CORS_ALLOWED_ORIGINS = [
+	# 허용할 Origin 추가
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://43.200.193.74:8000",
+    "http://43.200.193.74:3000",
+    "http://rememb.site:3000",
+    "http://rememb.site:8000",
+]

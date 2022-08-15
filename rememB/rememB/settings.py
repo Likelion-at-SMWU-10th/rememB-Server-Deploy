@@ -69,7 +69,7 @@ REST_FRAMEWORK = {
 REST_USE_JWT=TRUE
 
 SIMPLE_JWT={
-    'ACCESS_TOKEN_LIFETIME':datetime.timedelta(minutes=10),
+    'ACCESS_TOKEN_LIFETIME':datetime.timedelta(minutes=50),
     'REFRESH_TOKEN_LIFETIME':datetime.timedelta(days=1),
     'ROTATE_REFRESH_TOKENS':False,
     'TOKEN_USER_CLASS':'userapp.User',

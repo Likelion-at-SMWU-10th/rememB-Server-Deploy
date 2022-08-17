@@ -1,4 +1,3 @@
-import http
 from rest_framework.response import Response
 from .models import User
 from .serializers import JWTSigninSerializer, UserSerializer
@@ -8,11 +7,11 @@ from rest_framework.response import Response
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils import timezone
 from rest_framework import permissions
 from .authenticate import SafeJWTAuthentication
+import datetime
 
 
 class UserAuthTestView(APIView):
@@ -54,6 +53,7 @@ class user_detail(APIView):
 
     def put(self, request, pk):
         #put: pk의 계정 정보 수정
+        #필수 요청 항목: email, provider
         token_user=str(SafeJWTAuthentication.authenticate(self, request)[0])
         request_user=str(User.objects.filter(id=pk).values('email'))
 
@@ -86,18 +86,22 @@ class JWTSigninView(generics.CreateAPIView):
 
     def post(self,request):
         try:
+            date_birth=request.data['birth']
+            if len(date_birth)==4:
+                month=int(date_birth[:2])
+                day=int(date_birth[2:])
+                date_birth=str(datetime.date(1000,month,day))
+                request.data['birth']=date_birth
+            
             user = User.objects.get_or_create( 
                 email=request.data['email'],
                 provider=request.data['provider'],
                 birth=request.data['birth'],
-                username=request.data['username']
+                #username=request.data['username']
             )
         except:
             data = {
-                    "results": {
-                        "msg": "social provider error",
-                        "code": "E500"
-                    }
+                    'error':'either provider nor birth data is wrong'
                 }
             return Response(data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         

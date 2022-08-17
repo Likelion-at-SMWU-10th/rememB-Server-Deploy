@@ -1,25 +1,26 @@
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.views import APIView
-from rest_framework import permissions
-
-from userapp.authenticate import SafeJWTAuthentication
-
-from .serializers import PartyroomSerializer
+from turtle import left
+from userapp.models import User
 from letterapp.models import Letter
-
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from letterapp.serializers import *
 from userapp.models import User
 
-class PartyroomList(APIView):
-    authentication_classes=[SafeJWTAuthentication]
-    permission_classes=[permissions.AllowAny]
+class UserLetterView(APIView):
+    #authentication_classes=[SafeJWTAuthentication]
+    #permission_classes=[permissions.IsAuthenticated]
 
-    #userpk의 파티룸 내용 조회
+    #userpk의 편지만 조회
     def get(self,request,userpk):
-        try:
-            obj=Letter.objects.filter(user=userpk)
-            serializer=PartyroomSerializer(obj, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        #token_user=str(SafeJWTAuthentication.authenticate(self, request)[0])
+        #request_user=str(User.objects.all())
+        user=User.objects.get(id=userpk)
+        leftDay=User.getDayBefore(str(user.birth))
+        user_letters=Letter.objects.filter(user=userpk)
+        serializer=LetterSumSerializer(user_letters, many=True)
+        data={
+            'username':user.username,
+            'left_birth':leftDay,
+            'letters':serializer.data
+        }
+        return Response(data)

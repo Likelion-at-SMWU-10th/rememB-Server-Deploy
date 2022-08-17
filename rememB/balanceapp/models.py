@@ -6,8 +6,14 @@ from userapp.models import User
 class Question(models.Model):
     question_content=models.CharField(max_length=300, null=False, blank=False,)
 
+    def __str__(self):
+        return str(self.question_content[:10])
+
 class Answer(models.Model):
     answer_content=models.CharField(max_length=300, null=False, blank=False,)
+
+    def __str__(self):
+        return str(self.answer_content[:30])
 
 class Balance(models.Model):
     user=models.ForeignKey(User, on_delete=models.CASCADE, null=True,)

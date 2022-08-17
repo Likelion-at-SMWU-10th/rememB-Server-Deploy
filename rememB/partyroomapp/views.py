@@ -1,14 +1,15 @@
-
+from turtle import left
 from userapp.models import User
 from letterapp.models import Letter
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from letterapp.serializers import *
 from userapp.models import User
+from rest_framework import permissions
 
 class UserLetterView(APIView):
     #authentication_classes=[SafeJWTAuthentication]
-    #permission_classes=[permissions.IsAuthenticated]
+    permission_classes=[permissions.AllowAny]
 
     #userpk의 편지만 조회
     def get(self,request,userpk):
@@ -22,5 +23,6 @@ class UserLetterView(APIView):
             'username':user.username,
             'left_birth':leftDay,
             'letters':serializer.data
+            
         }
         return Response(data)

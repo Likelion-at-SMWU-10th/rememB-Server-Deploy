@@ -1,4 +1,4 @@
-from turtle import left
+
 from userapp.models import User
 from letterapp.models import Letter
 from rest_framework.views import APIView

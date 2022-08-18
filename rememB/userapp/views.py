@@ -96,7 +96,7 @@ class JWTSigninView(generics.CreateAPIView):
             user = User.objects.get_or_create( 
                 email=request.data['email'],
                 provider=request.data['provider'],
-                birth=request.data['birth'],
+                #birth=request.data['birth'],
             )
         except:
             data = {
@@ -112,6 +112,7 @@ class JWTSigninView(generics.CreateAPIView):
             )
             user.last_login=timezone.now()
             user.username=request.data['username']
+            user.birth=request.data['birth']
             try:
                 user.background=request.data['background']
             except:

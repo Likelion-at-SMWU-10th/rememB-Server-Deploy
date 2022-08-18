@@ -59,7 +59,7 @@ class BalanceSerializer(serializers.ModelSerializer):
     def get_acontent2(self, obj): 
         return Answer.objects.get(id=obj.question_id.id*2).answer_content
 
-
+#모든 질문과 답 보내는 api
 class BAQSerializer(serializers.ModelSerializer):
     a1id=serializers.SerializerMethodField()
     a1content=serializers.SerializerMethodField()
@@ -78,7 +78,6 @@ class BAQSerializer(serializers.ModelSerializer):
         )
 
     #유효하지 않은 값이 들어왔을 때 오류처리해야함
-
     def get_a1id(self, obj):
         return Answer.objects.get(id=(obj.id*2-1)).id
     

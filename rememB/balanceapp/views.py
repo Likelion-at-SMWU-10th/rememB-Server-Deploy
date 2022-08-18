@@ -68,10 +68,20 @@ class myBalanceList(APIView): #user(pk)의 질문&대답 목록
     permission_classes=[permissions.AllowAny]
 
     def get(self, request, userpk): 
-        user=User.objects.get(id=userpk)
-        balances=Balance.objects.filter(user=user) 
-        serializers=BalanceSerializer(balances,many=True)
-        return Response(serializers.data, status=status.HTTP_200_OK)
+        user=User.objects.get(id=userpk) 
+        balanceobj=Balance.objects.filter(user=user) 
+        serializers=BalanceSerializer(balanceobj,many=True)
+        
+        queryset = Question.objects.all()
+        print(type(queryset))
+        serializer1 = BAQSerializer(queryset, many=True)
+
+        context = {
+            'ALREADY ANSWER': serializers.data,
+            'Q&A': serializer1.data,
+        }
+
+        return Response(context, status=status.HTTP_200_OK)
 
 #/balance/ans/<질문번호>(=남은날짜)
 class myBalanceGame(APIView):

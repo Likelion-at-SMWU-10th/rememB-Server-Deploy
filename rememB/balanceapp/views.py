@@ -79,35 +79,40 @@ class myBalanceGame(APIView):
     permission_classes=[permissions.IsAuthenticated]
     
     def post(self, request, userpk): #밸런스게임 질문-답 선택(질문 형식으로)
-        userobj=User.objects.get(id=request.data['user'])
-        leftDay=User.getDayBefore(str(userobj.birth))
-        # print("D-DAY", leftDay)
-        if(leftDay == userpk): #오늘의 밸런스 게임
-            try: #이미 했다면
-                balanceobj = Balance.objects.filter(user=userobj).get(question_id=userpk)
-                return Response('이미 참여했습니다.', status=status.HTTP_200_OK)
-            except Balance.DoesNotExist: #안했으면
-                if((request.data['question_id']==str(userpk)) & ( (request.data['answer_id']==str(userpk*2-1)) | (request.data['answer_id']==str(userpk*2)))):
-                    serializer = BalancePostSerializer(data=request.data)
-                    if serializer.is_valid():
-                        serializer.save()
-                        return Response(serializer.data, status=status.HTTP_200_OK)
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-                else:
-                    return Response('질문/응답 번호가 잘못되었습니다.',status=status.HTTP_200_OK )
+        token_user=str(SafeJWTAuthentication.authenticate(self, request)[0])
+        request_user=str(User.objects.filter(id=userpk).values('email'))
 
-        elif(leftDay < userpk): #지난 밸런스게임
-            try: #이미 했다면
-                balanceobj = Balance.objects.filter(user=userobj).get(question_id=userpk)
-                return Response('이미 참여했습니다.', status=status.HTTP_200_OK)
-            except Balance.DoesNotExist: #안했으면
-                if((request.data['question_id']==str(userpk)) & ( (request.data['answer_id']==str(userpk*2-1)) | (request.data['answer_id']==str(userpk*2)))):
-                    serializer = BalancePostSerializer(data=request.data)
-                    if serializer.is_valid():
-                        serializer.save()
-                        return Response(serializer.data, status=status.HTTP_200_OK)
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-                else:
-                    return Response('질문/응답 번호가 잘못되었습니다.',status=status.HTTP_200_OK )
-        else:
-            return Response("D-day 해당하지 않음", status=status.HTTP_200_OK)
+        if token_user in request_user:
+            userobj=User.objects.get(id=request.data['user'])
+            leftDay=User.getDayBefore(str(userobj.birth))
+            # print("D-DAY", leftDay)
+            if(leftDay == userpk): #오늘의 밸런스 게임
+                try: #이미 했다면
+                    balanceobj = Balance.objects.filter(user=userobj).get(question_id=userpk)
+                    return Response('이미 참여했습니다.', status=status.HTTP_200_OK)
+                except Balance.DoesNotExist: #안했으면
+                    if((request.data['question_id']==str(userpk)) & ( (request.data['answer_id']==str(userpk*2-1)) | (request.data['answer_id']==str(userpk*2)))):
+                        serializer = BalancePostSerializer(data=request.data)
+                        if serializer.is_valid():
+                            serializer.save()
+                            return Response(serializer.data, status=status.HTTP_200_OK)
+                        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    else:
+                        return Response('질문/응답 번호가 잘못되었습니다.',status=status.HTTP_200_OK )
+
+            elif(leftDay < userpk): #지난 밸런스게임
+                try: #이미 했다면
+                    balanceobj = Balance.objects.filter(user=userobj).get(question_id=userpk)
+                    return Response('이미 참여했습니다.', status=status.HTTP_200_OK)
+                except Balance.DoesNotExist: #안했으면
+                    if((request.data['question_id']==str(userpk)) & ( (request.data['answer_id']==str(userpk*2-1)) | (request.data['answer_id']==str(userpk*2)))):
+                        serializer = BalancePostSerializer(data=request.data)
+                        if serializer.is_valid():
+                            serializer.save()
+                            return Response(serializer.data, status=status.HTTP_200_OK)
+                        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    else:
+                        return Response('질문/응답 번호가 잘못되었습니다.',status=status.HTTP_200_OK )
+            else:
+                return Response("D-day 해당하지 않음", status=status.HTTP_200_OK)
+        return Response({"error":"User Perimition Denied"},status=status.HTTP_401_UNAUTHORIZED)

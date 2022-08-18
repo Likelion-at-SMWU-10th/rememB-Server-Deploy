@@ -46,4 +46,4 @@ class UserRollView(APIView):
                 'letters':serializer.data
             }
             return Response(data)
-        return Response({"error":"User Perimtion Denied"},status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error":"User Perimition Denied"},status=status.HTTP_401_UNAUTHORIZED)

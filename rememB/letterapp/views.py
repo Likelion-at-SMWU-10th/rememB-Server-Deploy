@@ -67,7 +67,7 @@ class LetterDetail(APIView):
 
         if token_user in request_user:
             return Response(serializer.data)
-        return Response({"error":"User Perimition Denied"},status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error":"User Perimition Denied"},status=status.HTTP_401_UNAUTHORIZED)
     
     #기능 구현 필요없음
     def put(self, request, letterpk):

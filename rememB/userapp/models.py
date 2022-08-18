@@ -1,3 +1,4 @@
+from audioop import maxpp
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -6,10 +7,6 @@ from datetime import datetime
 
 class UserManager(BaseUserManager):
     def create_user(self, email, username, provider, birth, refreshToken, password=None):
-        if not email:
-            raise ValueError('The Email must be set')
-        if not provider:
-            raise ValueError('The Social Auth must be set')
 
         user=self.model(
             email=self.normalize_email(email),
@@ -52,7 +49,7 @@ class User(AbstractBaseUser):
     birth=models.DateField(blank=True,)
     refreshToken=models.CharField(max_length=2000, null=True, default='',)
     password=models.CharField(null=True, max_length=100)
-    
+    background=models.CharField(choices=background,max_length=2,null=True)
 
     # User 모델의 필수 field
     is_active = models.BooleanField(default=True)    
@@ -99,4 +96,3 @@ class User(AbstractBaseUser):
     @property
     def is_staff(self):
         return self.is_admin
-

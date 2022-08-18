@@ -6,9 +6,14 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from rest_framework import permissions
+from userapp.authenticate import SafeJWTAuthentication
 
 
 class LetterSend(APIView):
+    authentication_classes=[SafeJWTAuthentication]
+    permission_classes=[permissions.AllowAny]
+
     #userpk에게 편지 작성
     def post(self, request, userpk):
         user=get_object_or_404(User,pk=userpk)
@@ -18,22 +23,35 @@ class LetterSend(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class LetterList(APIView):
+    authentication_classes=[SafeJWTAuthentication]
+    permission_classes=[permissions.AllowAny]
+    #permission_classes=[permissions.IsAdminUser]
+
     #전체 편지 조회
     def get(self, request):
         letters=Letter.objects.all()
         serializer=LetterSerializer(letters, many=True)
         return Response(serializer.data)
 
-class LetterUserList(APIView):
-    #userpk의 편지만 조회
-    def get(self,request,userpk):
-        user_letters=Letter.objects.filter(user=userpk)
-        serializer=LetterSerializer(user_letters, many=True)
-        return Response(serializer.data)
+
+# class LetterUserList(APIView):
+#     authentication_classes=[SafeJWTAuthentication]
+#     permission_classes=[permissions.AllowAny]
+
+#     #userpk의 편지만 조회
+#     def get(self,request,userpk):
+#         user_letters=Letter.objects.filter(user=userpk)
+#         serializer=LetterSerializer(user_letters, many=True)
+#         return Response(serializer.data)
 
 
 class LetterDetail(APIView):
+    authentication_classes=[SafeJWTAuthentication]
+    #permission_classes=[permissions.AllowAny]
+    permission_classes=[permissions.IsAuthenticated]
+
     def get_object(self, letterpk):
         try:
             return Letter.objects.get(pk=letterpk)
@@ -43,7 +61,13 @@ class LetterDetail(APIView):
     def get(self, request, letterpk):
         letter=self.get_object(letterpk)
         serializer=LetterSerializer(letter)
-        return Response(serializer.data)
+
+        token_user=str(SafeJWTAuthentication.authenticate(self, request)[0])
+        request_user=str(User.objects.filter(id=serializer.data['user']))
+
+        if token_user in request_user:
+            return Response(serializer.data)
+        return Response({"error":"User Perimition Denied"},status=status.HTTP_400_BAD_REQUEST)
     
     #기능 구현 필요없음
     def put(self, request, letterpk):

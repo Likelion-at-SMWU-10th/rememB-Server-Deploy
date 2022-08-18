@@ -10,29 +10,6 @@ from .models import Answer, Balance, Question
 from .serializers import AnswerSerializer, BAQSerializer, BalancePostSerializer, QuestionSerializer, BalanceSerializer
 from userapp.models import User
 
-def getDayBefore(mybirthday):
-    mybirthdayList = mybirthday.split("-")
-    byear = int(mybirthdayList[0])
-    bmonth = int(mybirthdayList[1])
-    bday = int(mybirthdayList[2])
-    
-    nowList = str(datetime.now().date()).split("-")
-    nmonth = int(nowList[1])
-    nday= int(nowList[2])
-
-    if(bmonth<nmonth | ((bmonth==nmonth) & (bday<nday))): #이미 생일이 지난경우
-        dday = datetime(2023, bmonth, bday).date()
-        now = datetime.now().date()
-        #print(str(dday-now).split(",")[0].split(" ")[0])
-        return int(str(dday-now).split(",")[0].split(" ")[0])
-    else:
-        dday = datetime(2022, bmonth, bday).date()
-        #print(dday)
-        now = datetime.now().date()
-        diff = str(dday-now).split(",")[0].split(" ")[0]
-        #print(diff)
-        return int(diff)
-
 
 class QuestionList(APIView):
     authentication_classes=[SafeJWTAuthentication]
@@ -103,7 +80,7 @@ class myBalanceGame(APIView):
     
     def post(self, request, pk): #밸런스게임 질문-답 선택(질문 형식으로)
         userobj=User.objects.get(id=request.data['user'])
-        leftDay=getDayBefore(str(userobj.birth))
+        leftDay=User.getDayBefore(str(userobj.birth))
         # print("D-DAY", leftDay)
         if(leftDay == pk): #오늘의 밸런스 게임
             try: #이미 했다면
@@ -134,4 +111,3 @@ class myBalanceGame(APIView):
                     return Response('질문/응답 번호가 잘못되었습니다.',status=status.HTTP_200_OK )
         else:
             return Response("D-day 해당하지 않음", status=status.HTTP_200_OK)
-

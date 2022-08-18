@@ -75,7 +75,7 @@ class user_detail(APIView):
             obj=self.get_object(pk)
             obj.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response({"error":"User Perimtion Denied"},status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error":"User Perimition Denied"},status=status.HTTP_400_BAD_REQUEST)
 
 
 class JWTSigninView(generics.CreateAPIView):
@@ -97,11 +97,11 @@ class JWTSigninView(generics.CreateAPIView):
                 email=request.data['email'],
                 provider=request.data['provider'],
                 birth=request.data['birth'],
-                #username=request.data['username']
+                username=request.data['username']
             )
         except:
             data = {
-                    'error':'either provider nor birth data is wrong'
+                    'error':'request data is wrong'
                 }
             return Response(data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         

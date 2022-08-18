@@ -171,3 +171,11 @@ CORS_ALLOWED_ORIGINS = [
     "http://rememb.site:3000",
     "http://rememb.site:8000",
 ]
+
+
+CORS_ORIGIN_ALLOW_ALL = False
+
+# 접근 가능한 url 을 따로 관리
+CORS_ORIGIN_WHITELIST = ('http://127.0.0.1:8000', 'http://localhost:3000')
+
+CORS_ALLOW_CREDENTIALS = True

@@ -11,7 +11,7 @@ class LetterSerializer(serializers.ModelSerializer):
 class LetterDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model=Letter
-        fields=('id','user','get_img','content')
+        exclude=['created_at']
 
 class LetterSumSerializer(serializers.ModelSerializer):
     class Meta:

@@ -32,14 +32,25 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser):
 
     background=[
-        ('lp','lightpink'),
-        ('p','pink'),
-        ('or','orange'),
-        ('y','yellow'),
-        ('g','green'),
-        ('lb','lightblue'),
-        ('b','blue'),
-        ('pu','purple')
+        ('lp','#FFEFF3'),
+        ('p','#FFDDDD'),
+        ('or','#FFEED9'),
+        ('y','#FE7B1D'),
+        ('g','#FFF8CC'),
+        ('lb','#D8EEFF'),
+        ('b','#E2E8FF'),
+        ('pu','#EDE9FF')
+    ]
+
+    text=[
+        ('lp','#FE4179'),
+        ('p','#FF6161'),
+        ('or','#FE7B1D'),
+        ('y','#6C6C6C'),
+        ('g','#42B494'),
+        ('lb','#1786DB'),
+        ('b','#3753C0'),
+        ('pu','#7341C3')
     ]
 
     id = models.AutoField(primary_key=True,)
@@ -49,7 +60,8 @@ class User(AbstractBaseUser):
     birth=models.DateField(blank=True,)
     refreshToken=models.CharField(max_length=2000, null=True, default='',)
     password=models.CharField(null=True, max_length=100)
-    background=models.CharField(choices=background,max_length=2,null=True)
+    background=models.CharField(choices=background,max_length=2, default='lp')
+    text=models.CharField(choices=text,max_length=2,default="lp")
 
     # User 모델의 필수 field
     is_active = models.BooleanField(default=True)    

@@ -17,6 +17,8 @@ class UserLetterView(APIView):
         serializer=LetterSumSerializer(user_letters, many=True)
         data={
             'username':user.username,
+            'background':user.background,
+            'text':user.text,
             'left_birth':leftDay,
             'letters':serializer.data
         }

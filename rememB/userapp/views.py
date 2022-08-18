@@ -97,7 +97,6 @@ class JWTSigninView(generics.CreateAPIView):
                 email=request.data['email'],
                 provider=request.data['provider'],
                 birth=request.data['birth'],
-                #username=request.data['username']
             )
         except:
             data = {
@@ -113,6 +112,14 @@ class JWTSigninView(generics.CreateAPIView):
             )
             user.last_login=timezone.now()
             user.username=request.data['username']
+            try:
+                user.background=request.data['background']
+            except:
+                pass
+            try:
+                user.text=request.data['text']
+            except:
+                pass
             token = RefreshToken.for_user(user)
             user.refreshToken = str(token)
             user.save()

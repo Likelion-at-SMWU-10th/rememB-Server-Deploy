@@ -57,7 +57,7 @@ class User(AbstractBaseUser):
     email=models.EmailField(verbose_name=('email'), max_length=64, unique=True, null=False, blank=False,)
     username=models.CharField(max_length=30, null=False, blank=False,)
     provider=models.CharField(max_length=20, null=False, blank=False,)
-    birth=models.DateField(blank=True,)
+    birth=models.DateField(blank=True,null=True)
     refreshToken=models.CharField(max_length=2000, null=True, default='',)
     password=models.CharField(null=True, max_length=100)
     background=models.CharField(choices=background,max_length=2, default='lp')

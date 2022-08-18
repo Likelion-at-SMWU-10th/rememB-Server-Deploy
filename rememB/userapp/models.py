@@ -35,7 +35,7 @@ class User(AbstractBaseUser):
         ('lp','#FFEFF3'),
         ('p','#FFDDDD'),
         ('or','#FFEED9'),
-        ('y','#FE7B1D'),
+        ('y','#FFF8CC'),
         ('g','#FFF8CC'),
         ('lb','#D8EEFF'),
         ('b','#E2E8FF'),

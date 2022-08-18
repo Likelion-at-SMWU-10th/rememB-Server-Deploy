@@ -4,6 +4,7 @@ from userapp.models import User
 class Letter(models.Model):
     id = models.AutoField(primary_key=True, null=False, blank=False) 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    letter_from=models.CharField(null=True, max_length=100)
     content = models.TextField()
     imgfolder_no=models.IntegerField(null=True)
     img_no = models.IntegerField(null=True)

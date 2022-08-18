@@ -99,6 +99,11 @@ class JWTSigninView(generics.CreateAPIView):
                 #birth=request.data['birth'],
             )
         except:
+            if User.objects.get(email=request.data['email']):
+                data={
+                    'error':'email account is exist. try other social auth!'
+                }
+                return Response(data, status=status.HTTP_409_CONFLICT)
             data = {
                     'error':'request data is wrong'
                 }

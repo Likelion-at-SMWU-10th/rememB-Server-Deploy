@@ -68,8 +68,9 @@ class myBalanceList(APIView): #user(pk)의 질문&대답 목록
     permission_classes=[permissions.AllowAny]
 
     def get(self, request, userpk): 
-        user=User.objects.get(id=userpk) 
-        balanceobj=Balance.objects.filter(user=user) 
+        user=User.objects.get(id=userpk)
+        leftDay=User.getDayBefore(str(user.birth))
+        balanceobj=Balance.objects.filter(user=user)
         serializers=BalanceSerializer(balanceobj,many=True)
         
         queryset = Question.objects.all()
@@ -77,6 +78,7 @@ class myBalanceList(APIView): #user(pk)의 질문&대답 목록
         serializer1 = BAQSerializer(queryset, many=True)
 
         context = {
+            'leftDay':leftDay,
             'ALREADY_ANSWER': serializers.data,
             'QnA': serializer1.data,
         }

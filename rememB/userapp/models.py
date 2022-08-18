@@ -103,6 +103,8 @@ class User(AbstractBaseUser):
             now = datetime.now().date()
             diff = str(dday-now).split(",")[0].split(" ")[0]
             print(diff)
+            if diff=='0:00:00': #생일 당일인 경우
+                return 0
             return int(diff)
 
     @property

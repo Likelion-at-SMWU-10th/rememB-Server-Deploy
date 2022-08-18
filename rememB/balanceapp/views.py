@@ -78,7 +78,7 @@ class myBalanceList(APIView): #user(pk)의 질문&대답 목록
 
         context = {
             'ALREADY ANSWER': serializers.data,
-            'Q&A': serializer1.data,
+            'QnA': serializer1.data,
         }
 
         return Response(context, status=status.HTTP_200_OK)

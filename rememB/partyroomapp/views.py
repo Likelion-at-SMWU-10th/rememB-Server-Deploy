@@ -17,13 +17,38 @@ class UserLetterView(APIView):
         leftDay=User.getDayBefore(str(user.birth))
         user_letters=Letter.objects.filter(user=userpk)
         serializer=LetterSumSerializer(user_letters, many=True)
-        data={
-            'username':user.username,
-            'background':user.get_background_display(),
-            'text':user.get_text_display(),
-            'left_birth':leftDay,
-            'letters':serializer.data
+
+        try:
+            token_user=str(SafeJWTAuthentication.authenticate(self, request)[0])
+            request_user=str(User.objects.filter(id=userpk).values('email'))
+        except TypeError:
+            data={
+                'is_myparty':False,
+                'username':user.username,
+                'background':user.get_background_display(),
+                'text':user.get_text_display(),
+                'left_birth':leftDay,
+                'letters':serializer.data
         }
+        else:
+            if token_user in request_user:
+                data={
+                'is_myparty':True,
+                'username':user.username,
+                'background':user.get_background_display(),
+                'text':user.get_text_display(),
+                'left_birth':leftDay,
+                'letters':serializer.data
+                }
+            else:
+                data={
+                    'is_myparty':False,
+                    'username':user.username,
+                    'background':user.get_background_display(),
+                    'text':user.get_text_display(),
+                    'left_birth':leftDay,
+                    'letters':serializer.data
+                }
         return Response(data)
 
 

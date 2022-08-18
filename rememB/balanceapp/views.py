@@ -77,7 +77,7 @@ class myBalanceList(APIView): #user(pk)의 질문&대답 목록
         serializer1 = BAQSerializer(queryset, many=True)
 
         context = {
-            'ALREADY ANSWER': serializers.data,
+            'ALREADY_ANSWER': serializers.data,
             'QnA': serializer1.data,
         }
 

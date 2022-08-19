@@ -15,8 +15,11 @@ class UserLetterView(APIView):
     def get(self,request,userpk):
         user=User.objects.get(id=userpk)
         leftDay=User.getDayBefore(str(user.birth))
-        user_letters=Letter.objects.filter(user=userpk)
-        serializer=LetterSumSerializer(user_letters, many=True)
+        try: 
+            user_letters=Letter.objects.filter(user=userpk)
+            serializer=LetterSumSerializer(user_letters, many=True)
+        except:
+            return Response("Letter없음", status=status.HTTP_400_BAD_REQUEST)
 
         try:
             token_user=str(SafeJWTAuthentication.authenticate(self, request)[0])

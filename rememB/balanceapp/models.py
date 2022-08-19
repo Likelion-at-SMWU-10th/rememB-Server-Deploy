@@ -21,4 +21,4 @@ class Balance(models.Model):
     question_id=models.ForeignKey(Question, on_delete=models.CASCADE, null=True,)
 
     def __str__(self):
-        return self.user
+        return str(self.user)

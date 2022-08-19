@@ -72,15 +72,24 @@ class myBalanceList(APIView): #user(pk)의 질문&대답 목록
         leftDay=User.getDayBefore(str(user.birth))
         balanceobj=Balance.objects.filter(user=user)
         serializers=BalanceSerializer(balanceobj,many=True)
-        
+        done_user=[]
+        for i in range(len(serializers.data)):
+            done_user.append(serializers.data[i]['question_id'])
+    
         queryset = Question.objects.all()
-        print(type(queryset))
+
         serializer1 = BAQSerializer(queryset, many=True)
+        serializer1_list=[]
+        for i in range(len(serializer1.data)):
+            
+            print(serializer1.data[i]['id'])
+            if serializer1.data[i]['id']  not in done_user:
+                serializer1_list.append(serializer1.data[i])
 
         context = {
             'leftDay':leftDay,
             'ALREADY_ANSWER': serializers.data,
-            'QnA': serializer1.data,
+            'QnA': serializer1_list
         }
 
         return Response(context, status=status.HTTP_200_OK)

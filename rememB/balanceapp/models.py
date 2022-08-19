@@ -19,3 +19,6 @@ class Balance(models.Model):
     user=models.ForeignKey(User, on_delete=models.CASCADE, null=True,)
     answer_id=models.ForeignKey(Answer, on_delete=models.CASCADE, null=True,)
     question_id=models.ForeignKey(Question, on_delete=models.CASCADE, null=True,)
+
+    def __str__(self):
+        return self.user

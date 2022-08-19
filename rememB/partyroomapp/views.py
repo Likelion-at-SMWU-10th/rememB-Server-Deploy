@@ -13,8 +13,11 @@ class UserLetterView(APIView):
 
     #userpk의 편지만 조회
     def get(self,request,userpk):
-        user=User.objects.get(id=userpk)
-        leftDay=User.getDayBefore(str(user.birth))
+        try:
+            user=User.objects.get(id=userpk)
+            leftDay=User.getDayBefore(str(user.birth))
+        except:
+            return Response("유저가 없습니다.", status=status.HTTP_400_BAD_REQUEST)
         try: 
             user_letters=Letter.objects.filter(user=userpk)
             serializer=LetterSumSerializer(user_letters, many=True)

@@ -15,7 +15,10 @@ class MyUserSerializer(serializers.ModelSerializer):
         fields= ('id', 'last_login', 'email' , 'username', 'provider', 'birth', 'refreshToken', 'password', 'is_active' ,'is_admin', 'month', 'day' )
 
     def get_month(self, obj):
-        return str(User.objects.get(id=obj.id).birth).split("-")[1]
+        month = str(User.objects.get(id=obj.id).birth).split("-")[1]
+        if(month[0] == '0'):
+            month = month[1]
+        return month
 
     def get_day(self, obj):
         return str(User.objects.get(id=obj.id).birth).split("-")[2]

@@ -106,7 +106,7 @@ class myBalanceGame(APIView):
                     balanceobj = Balance.objects.filter(user=userobj).get(question_id=qpk)
                     return Response('이미 참여했습니다.', status=status.HTTP_200_OK)
                 except Balance.DoesNotExist: #안했으면
-                    if((request.data['question_id']==str(qpk)) & ( (int(request.data['answer_id'])==qpk*2-1) | (request.data['answer_id'])==str(qpk*2))):
+                    if((int(request.data['question_id'])==(qpk)) & ( (int(request.data['answer_id'])==qpk*2-1) | (int(request.data['answer_id'])==qpk*2))):
                         serializer = BalancePostSerializer(data=request.data)
                         if serializer.is_valid():
                             serializer.save()

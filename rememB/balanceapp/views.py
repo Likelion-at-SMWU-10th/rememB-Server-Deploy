@@ -90,23 +90,23 @@ class myBalanceGame(APIView):
     authentication_classes=[SafeJWTAuthentication]
     permission_classes=[permissions.IsAuthenticated]
     
-    def post(self, request, userpk): #밸런스게임 질문-답 선택(질문 형식으로)
-        # print(request)
-        # print(userpk)
-        # token_user=str(SafeJWTAuthentication.authenticate(self, request)[0])
-        # request_user=str(User.objects.filter(id=userpk).values('email'))
-        # print(token_user)
-        # print(request_user)
-        # if token_user in request_user:
+    def post(self, request, qpk): #밸런스게임 질문-답 선택(질문 형식으로)
+        print(request)
+        print(qpk)
+        token_user=str(SafeJWTAuthentication.authenticate(self, request)[0])
+        request_user=str(User.objects.filter(id=request.data['user']).values('email'))
+        print(token_user)
+        print(request_user)
+        if token_user in request_user:
             userobj=User.objects.get(id=request.data['user'])
             leftDay=User.getDayBefore(str(userobj.birth))
             print("D-DAY", leftDay)
-            if(leftDay == userpk): #오늘의 밸런스 게임
+            if(leftDay == qpk): #오늘의 밸런스 게임
                 try: #이미 했다면
-                    balanceobj = Balance.objects.filter(user=userobj).get(question_id=userpk)
+                    balanceobj = Balance.objects.filter(user=userobj).get(question_id=qpk)
                     return Response('이미 참여했습니다.', status=status.HTTP_200_OK)
                 except Balance.DoesNotExist: #안했으면
-                    if((request.data['question_id']==str(userpk)) & ( (int(request.data['answer_id'])==userpk*2-1) | (request.data['answer_id'])==str(userpk*2))):
+                    if((request.data['question_id']==str(qpk)) & ( (int(request.data['answer_id'])==qpk*2-1) | (request.data['answer_id'])==str(qpk*2))):
                         serializer = BalancePostSerializer(data=request.data)
                         if serializer.is_valid():
                             serializer.save()
@@ -115,12 +115,12 @@ class myBalanceGame(APIView):
                     else:
                         return Response('질문/응답 번호가 잘못되었습니다.',status=status.HTTP_200_OK )
 
-            elif(leftDay < userpk): #지난 밸런스게임
+            elif(leftDay < qpk): #지난 밸런스게임
                 try: #이미 했다면
-                    balanceobj = Balance.objects.filter(user=userobj).get(question_id=userpk)
+                    balanceobj = Balance.objects.filter(user=userobj).get(question_id=qpk)
                     return Response('이미 참여했습니다.', status=status.HTTP_200_OK)
                 except Balance.DoesNotExist: #안했으면
-                    if((int(request.data['question_id'])==userpk) & ( (int(request.data['answer_id'])==userpk*2-1) | (int(request.data['answer_id'])==userpk*2))):
+                    if((int(request.data['question_id'])==qpk) & ( (int(request.data['answer_id'])==qpk*2-1) | (int(request.data['answer_id'])==qpk*2))):
                         serializer = BalancePostSerializer(data=request.data)
                         if serializer.is_valid():
                             serializer.save()
@@ -130,4 +130,4 @@ class myBalanceGame(APIView):
                         return Response('질문/응답 번호가 잘못되었습니다.',status=status.HTTP_200_OK )
             else:
                 return Response("D-day 해당하지 않음", status=status.HTTP_200_OK)
-       # return Response({"error":"User Perimition Denied"},status=status.HTTP_401_UNAUTHORIZED)
+        return Response({"error":"User Perimition Denied"},status=status.HTTP_401_UNAUTHORIZED)

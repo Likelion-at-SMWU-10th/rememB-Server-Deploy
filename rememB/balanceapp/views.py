@@ -81,8 +81,6 @@ class myBalanceList(APIView): #user(pk)의 질문&대답 목록
         serializer1 = BAQSerializer(queryset, many=True)
         serializer1_list=[]
         for i in range(len(serializer1.data)):
-            
-            print(serializer1.data[i]['id'])
             if serializer1.data[i]['id']  not in done_user:
                 serializer1_list.append(serializer1.data[i])
 

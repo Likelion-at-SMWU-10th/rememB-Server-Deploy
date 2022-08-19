@@ -47,7 +47,7 @@ class user_detail(APIView):
 
         if token_user in request_user:
             obj=User.objects.get(id=pk)
-            serializers=UserSerializer(obj)
+            serializers=MyUserSerializer(obj)
             return Response(serializers.data)
         return Response({"error":"User Perimition Denied"},status=status.HTTP_401_UNAUTHORIZED)
 

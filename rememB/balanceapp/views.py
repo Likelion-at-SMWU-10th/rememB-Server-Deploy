@@ -91,13 +91,16 @@ class myBalanceGame(APIView):
     permission_classes=[permissions.IsAuthenticated]
     
     def post(self, request, userpk): #밸런스게임 질문-답 선택(질문 형식으로)
-        token_user=str(SafeJWTAuthentication.authenticate(self, request)[0])
-        request_user=str(User.objects.filter(id=userpk).values('email'))
-
-        if token_user in request_user:
+        # print(request)
+        # print(userpk)
+        # token_user=str(SafeJWTAuthentication.authenticate(self, request)[0])
+        # request_user=str(User.objects.filter(id=userpk).values('email'))
+        # print(token_user)
+        # print(request_user)
+        # if token_user in request_user:
             userobj=User.objects.get(id=request.data['user'])
             leftDay=User.getDayBefore(str(userobj.birth))
-            # print("D-DAY", leftDay)
+            print("D-DAY", leftDay)
             if(leftDay == userpk): #오늘의 밸런스 게임
                 try: #이미 했다면
                     balanceobj = Balance.objects.filter(user=userobj).get(question_id=userpk)
@@ -127,4 +130,4 @@ class myBalanceGame(APIView):
                         return Response('질문/응답 번호가 잘못되었습니다.',status=status.HTTP_200_OK )
             else:
                 return Response("D-day 해당하지 않음", status=status.HTTP_200_OK)
-        return Response({"error":"User Perimition Denied"},status=status.HTTP_401_UNAUTHORIZED)
+       # return Response({"error":"User Perimition Denied"},status=status.HTTP_401_UNAUTHORIZED)
